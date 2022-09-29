@@ -85,6 +85,10 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	}
 
 	public static void main(String[] args) throws Exception {
+		// set decrypt tool
+		DecryptClassToolFactory.type = 1;
+		// Get password from the command line to decrypt class file
+		DecryptClassToolFactory.init(args);
 		new JarLauncher().launch(args);
 	}
 

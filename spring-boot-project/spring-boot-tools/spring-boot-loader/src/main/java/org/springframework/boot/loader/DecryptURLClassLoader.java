@@ -36,17 +36,9 @@ import java.util.logging.Logger;
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.jar.Handler;
 
-/**
- * {@link ClassLoader} used by the {@link Launcher}.
- *
- * @author Phillip Webb
- * @author Dave Syer
- * @author Andy Wilkinson
- * @since 1.0.0
- */
-public class LaunchedURLClassLoader extends URLClassLoader {
+public class DecryptURLClassLoader extends URLClassLoader {
 
-	private static final int BUFFER_SIZE = 4096;
+	private static final int BUFFER_SIZE = 16;
 
 	static {
 		ClassLoader.registerAsParallelCapable();
@@ -58,9 +50,9 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 	private final Object packageLock = new Object();
 
-	private volatile DefinePackageCallType definePackageCallType;
+	private volatile DefinePackageCallTypePlus definePackageCallTypePlus;
 
-	private static final Logger log = Logger.getLogger(LaunchedURLClassLoader.class.getName());
+	private static final Logger log = Logger.getLogger(DecryptURLClassLoader.class.getName());
 
 	private static final String GroupPath = "cn.tnar.flyos";
 
@@ -103,7 +95,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	 * @param urls the URLs from which to load classes and resources
 	 * @param parent the parent class loader for delegation
 	 */
-	public LaunchedURLClassLoader(URL[] urls, ClassLoader parent) {
+	public DecryptURLClassLoader(URL[] urls, ClassLoader parent) {
 		this(false, urls, parent);
 	}
 
@@ -113,7 +105,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	 * @param urls the URLs from which to load classes and resources
 	 * @param parent the parent class loader for delegation
 	 */
-	public LaunchedURLClassLoader(boolean exploded, URL[] urls, ClassLoader parent) {
+	public DecryptURLClassLoader(boolean exploded, URL[] urls, ClassLoader parent) {
 		this(exploded, null, urls, parent);
 	}
 
@@ -125,10 +117,11 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	 * @param parent the parent class loader for delegation
 	 * @since 2.3.1
 	 */
-	public LaunchedURLClassLoader(boolean exploded, Archive rootArchive, URL[] urls, ClassLoader parent) {
+	public DecryptURLClassLoader(boolean exploded, Archive rootArchive, URL[] urls, ClassLoader parent) {
 		super(urls, parent);
 		this.exploded = exploded;
 		this.rootArchive = rootArchive;
+		log.warning(Arrays.toString(urls));
 	}
 
 	@Override
@@ -152,7 +145,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 		Handler.setUseFastConnectionExceptions(true);
 		try {
-			return new UseFastConnectionExceptionsEnumeration(super.findResources(name));
+			return new UseFastConnectionExceptionsEnumerationPlus(super.findResources(name));
 		}
 		finally {
 			Handler.setUseFastConnectionExceptions(false);
@@ -161,22 +154,11 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 	@Override
 	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-		if (name.startsWith("org.springframework.boot.loader.jarmode.")) {
-			try {
-				Class<?> result = loadClassInLaunchedClassLoader(name);
-				if (resolve) {
-					resolveClass(result);
-				}
-				return result;
-			}
-			catch (ClassNotFoundException ex) {
-			}
-		}
 		boolean isShow = name.startsWith(GroupPath) && !name.startsWith(SKIP_LIB) && !isSkip(name);
 		if (isShow) {
 			try {
 				log.warning("===> \nname= " + name + "\nresolve=" + resolve);
-				Class<?> result = loadClassInLaunchedClassLoaderPlus(name);
+				Class<?> result = loadClassInLaunchedClassLoader(name);
 				if (resolve) {
 					resolveClass(result);
 				}
@@ -187,11 +169,15 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			}
 		}
 		if (this.exploded) {
+			if (isShow) {
+				log.warning("if (this.exploded)===>" + name + "\n" + resolve);
+			}
 			return super.loadClass(name, resolve);
 		}
 		if (isShow) {
 			log.warning("Handler.setUseFastConnectionExceptions(true);");
 		}
+
 		Handler.setUseFastConnectionExceptions(true);
 		try {
 			try {
@@ -223,35 +209,6 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	}
 
 	private Class<?> loadClassInLaunchedClassLoader(String name) throws ClassNotFoundException {
-		String internalName = name.replace('.', '/') + ".class";
-		InputStream inputStream = getParent().getResourceAsStream(internalName);
-		if (inputStream == null) {
-			throw new ClassNotFoundException(name);
-		}
-		try {
-			try {
-				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-				byte[] buffer = new byte[BUFFER_SIZE];
-				int bytesRead = -1;
-				while ((bytesRead = inputStream.read(buffer)) != -1) {
-					outputStream.write(buffer, 0, bytesRead);
-				}
-				inputStream.close();
-				byte[] bytes = outputStream.toByteArray();
-				Class<?> definedClass = defineClass(name, bytes, 0, bytes.length);
-				definePackageIfNecessary(name);
-				return definedClass;
-			}
-			finally {
-				inputStream.close();
-			}
-		}
-		catch (IOException ex) {
-			throw new ClassNotFoundException("Cannot load resource for class [" + name + "]", ex);
-		}
-	}
-
-	private Class<?> loadClassInLaunchedClassLoaderPlus(String name) throws ClassNotFoundException {
 		String internalName = name.replace('.', '/') + ".class";
 		InputStream inputStream = this.getResourceAsStream(internalName);
 		if (inputStream == null) {
@@ -343,7 +300,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			return super.definePackage(name, man, url);
 		}
 		synchronized (this.packageLock) {
-			return doDefinePackage(DefinePackageCallType.MANIFEST, () -> super.definePackage(name, man, url));
+			return doDefinePackage(DefinePackageCallTypePlus.MANIFEST, () -> super.definePackage(name, man, url));
 		}
 	}
 
@@ -355,7 +312,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 					sealBase);
 		}
 		synchronized (this.packageLock) {
-			if (this.definePackageCallType == null) {
+			if (this.definePackageCallTypePlus == null) {
 				// We're not part of a call chain which means that the URLClassLoader
 				// is trying to define a package for our exploded JAR. We use the
 				// manifest version to ensure package attributes are set
@@ -364,7 +321,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 					return definePackage(name, manifest, sealBase);
 				}
 			}
-			return doDefinePackage(DefinePackageCallType.ATTRIBUTES, () -> super.definePackage(name, specTitle,
+			return doDefinePackage(DefinePackageCallTypePlus.ATTRIBUTES, () -> super.definePackage(name, specTitle,
 					specVersion, specVendor, implTitle, implVersion, implVendor, sealBase));
 		}
 	}
@@ -378,14 +335,14 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	private <T> T doDefinePackage(DefinePackageCallType type, Supplier<T> call) {
-		DefinePackageCallType existingType = this.definePackageCallType;
+	private <T> T doDefinePackage(DefinePackageCallTypePlus type, Supplier<T> call) {
+		DefinePackageCallTypePlus existingType = this.definePackageCallTypePlus;
 		try {
-			this.definePackageCallType = type;
+			this.definePackageCallTypePlus = type;
 			return call.get();
 		}
 		finally {
-			this.definePackageCallType = existingType;
+			this.definePackageCallTypePlus = existingType;
 		}
 	}
 
@@ -417,11 +374,11 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	private static class UseFastConnectionExceptionsEnumeration implements Enumeration<URL> {
+	private static class UseFastConnectionExceptionsEnumerationPlus implements Enumeration<URL> {
 
 		private final Enumeration<URL> delegate;
 
-		UseFastConnectionExceptionsEnumeration(Enumeration<URL> delegate) {
+		UseFastConnectionExceptionsEnumerationPlus(Enumeration<URL> delegate) {
 			this.delegate = delegate;
 		}
 
@@ -454,7 +411,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	 * The different types of call made to define a package. We track these for exploded
 	 * jars so that we can detect packages that should have manifest attributes applied.
 	 */
-	private enum DefinePackageCallType {
+	private enum DefinePackageCallTypePlus {
 
 		/**
 		 * A define package call from a resource that has a manifest.
