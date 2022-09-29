@@ -356,11 +356,6 @@ public class PropertiesLauncher extends Launcher {
 		while (archives.hasNext()) {
 			urls.add(archives.next().getUrl());
 		}
-		// DecryptURLClassLoader decryptURLClassLoader = new
-		// DecryptURLClassLoader(urls.toArray(NO_URLS),
-		// getClass().getClassLoader());
-		// ClassLoader loader = new LaunchedURLClassLoader(urls.toArray(NO_URLS),
-		// decryptURLClassLoader);
 		ClassLoader loader = new LaunchedURLClassLoader(urls.toArray(NO_URLS), getClass().getClassLoader());
 		debug("Classpath for custom loader: " + urls);
 		loader = wrapWithCustomClassLoader(loader, customLoaderClassName);

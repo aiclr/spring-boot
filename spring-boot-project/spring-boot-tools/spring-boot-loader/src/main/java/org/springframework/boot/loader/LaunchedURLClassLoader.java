@@ -68,25 +68,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 	private static final String SKIP_LIB_AOP = "cn.tnar.flyos.acs.aop";
 
-	private static final List<String> skip = Arrays.asList("ParkingApplication.class", "DeviceApplication.class",
-			"WatchApplication.class", "SyncApplication.class", "AccessPaymentAspect.class", "CashOutAspect.class",
-			"IDelYunParkOutGateCar.class", "DelYunParkOutGateCar.class", "UIController.class", "SendMQ.class",
-			"MockMSGVO.class", "ParkingLotController.class", "MakeupOrderDto.class", "MakeupInLogParamDto.class",
-			"ManualOrderResponse.class", "ManualOrderProcessor.class", "ManualOrderGenerator.class",
-			"AbstractManualOrderGenerator.class", "NoInOrderGenerator.class", "NoPlateOrderGenerator.class",
-			"FuzzyMatchOrderGenerator.class", "CentralPayOrderGenerator.class", "ETCOrderGenerator.class",
-			"FlyParkOrderLogServiceImpl.class", "FlyAccessServiceImpl.class", "GroupCarRecordServiceImpl.class",
-			"ParkSocketClient.class", "HikSendService.class", "FlyHikSendServiceImpl.class",
-			"ParkingRecordServiceImpl.class", "FlyEventLogServiceImpl.class", "RodService.class",
-			"RodServiceImpl.class", "CashierOperatorService.class", "CashierOperatorServiceImpl.class",
-			"ETCUpLoadDataService.class", "ETCUploadDataServiceImpl.class", "DeviceTraceOrderService.class",
-			"DeviceTranceOrderServiceImpl.class", "DeductionRequestVO.class", "DeductionResponseVO.class",
-			"StcbEtcUploadPayment.class", "Rule4InoutPro.class", "RuleInOutMessageVO.class", "GateAccessReceiver.class",
-			"PaymentReceiver.class", "GateGuard.class", "STCloudBoxPayOrder.class", "DeductionRequestVO.class",
-			"DeductionResponseVO.class", "IHotTaskService.class", "HotTaskService.class", "HotTaskPO.class",
-			"CommonController.class", "CashierPermitService.class", "CashierPermitServiceImpl.class",
-			"TCashierPermit.class", "FlySyncGroupCarServiceImpl.class", "CashAndEleIsShowAble.class",
-			"CashAndEleIsShowAbleImpl.class");
+	private static final List<String> skip = Arrays.asList("AccessPaymentAspect.class", "CashOutAspect.class");
 
 	private static boolean isSkip(String name) {
 		String str = name + ".class";

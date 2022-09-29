@@ -93,11 +93,6 @@ public abstract class Launcher {
 	 * @throws Exception if the classloader cannot be created
 	 */
 	protected ClassLoader createClassLoader(URL[] urls) throws Exception {
-		// DecryptURLClassLoader decryptURLClassLoader = new
-		// DecryptURLClassLoader(isExploded(), getArchive(), urls,
-		// getClass().getClassLoader());
-		// return new LaunchedURLClassLoader(isExploded(), getArchive(), urls,
-		// decryptURLClassLoader);
 		return new LaunchedURLClassLoader(isExploded(), getArchive(), urls, getClass().getClassLoader());
 	}
 
