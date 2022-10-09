@@ -64,10 +64,6 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 	private static final String GroupPath = "cn.tnar.flyos";
 
-	private static final String SKIP_LIB = "cn.tnar.flyos.api";
-
-	private static final String SKIP_LIB_AOP = "cn.tnar.flyos.acs.aop";
-
 	private static final List<String> skip = Arrays.asList("AccessPaymentAspect.class", "CashOutAspect.class");
 
 	private static boolean isSkip(String name) {
@@ -154,7 +150,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			catch (ClassNotFoundException ex) {
 			}
 		}
-		boolean isShow = name.startsWith(GroupPath) && !name.startsWith(SKIP_LIB) && !isSkip(name);
+		boolean isShow = name.startsWith(GroupPath) && !isSkip(name);
 		if (isShow) {
 			try {
 				log.warning("===> \nname= " + name + "\nresolve=" + resolve);

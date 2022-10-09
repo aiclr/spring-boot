@@ -4,6 +4,8 @@ plugins {
 	id "org.springframework.boot.deployed"
 }
 
+compileJava.destinationDir=file("/tmp/spring/")
+
 description = "Spring Boot Loader"
 
 dependencies {
