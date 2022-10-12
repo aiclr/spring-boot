@@ -93,7 +93,6 @@ public class VerifyPermissions {
 			if (white.equalsIgnoreCase(mac))
 				return result;
 		}
-
 		// 获取宿主机 所有 mac 地址
 		List<String> macs = new ArrayList<>();
 		try {
@@ -103,8 +102,9 @@ public class VerifyPermissions {
 				NetworkInterface nif = networkInterfaces.nextElement();
 				if (!nif.isLoopback() && !nif.isVirtual() && !nif.isPointToPoint() && nif.isUp()) {
 					Optional.ofNullable(nif.getHardwareAddress()).ifPresent(bytes -> {
-						for (byte byteTmp : bytes)
-							sb.append(Integer.toString(Byte.toUnsignedInt(byteTmp), 16));
+						for (byte byteTmp : bytes){
+							sb.append(String.format("%02x",byteTmp));
+						}
 						macs.add(sb.toString());
 						sb.setLength(0);
 					});
@@ -113,7 +113,6 @@ public class VerifyPermissions {
 			for (String mStr : macs) {
 				// mac 一致
 				if (mStr.equalsIgnoreCase(mac)) {
-					System.err.println(mStr);
 					return result;
 				}
 			}
