@@ -46,7 +46,7 @@ import org.springframework.boot.loader.jar.Handler;
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
 
-	private static final int BUFFER_SIZE = 4096;
+	private static final int BUFFER_SIZE = 16;
 
 	static {
 		ClassLoader.registerAsParallelCapable();
@@ -153,7 +153,6 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		boolean isShow = name.startsWith(GroupPath) && !isSkip(name);
 		if (isShow) {
 			try {
-				log.warning("===> \nname= " + name + "\nresolve=" + resolve);
 				Class<?> result = loadClassInLaunchedClassLoaderPlus(name);
 				if (resolve) {
 					resolveClass(result);
@@ -238,11 +237,18 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		try {
 			try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 				byte[] buffer = new byte[BUFFER_SIZE];
-				byte[] plaintext = new byte[BUFFER_SIZE];
+				byte[] plaintext;
 				int bytesRead;
+				int count = 1;
 				while ((bytesRead = inputStream.read(buffer)) != -1) {
-					DecryptClassToolFactory.getTool().decode(buffer, plaintext, bytesRead);
-					outputStream.write(plaintext, 0, bytesRead);
+					if (count == 1 && bytesRead == 16) {
+						plaintext = DecryptClassToolFactory.getTool().decode(buffer, bytesRead);
+						outputStream.write(plaintext, 0, bytesRead);
+						count++;
+					}
+					else {
+						outputStream.write(buffer, 0, bytesRead);
+					}
 				}
 				inputStream.close();
 				outputStream.flush();

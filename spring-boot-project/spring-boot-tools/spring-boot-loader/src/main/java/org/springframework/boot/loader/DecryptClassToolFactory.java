@@ -35,20 +35,12 @@ public final class DecryptClassToolFactory {
 		}
 	}
 
-	public static void init(String[] args) {
-		if (type == 1) {
-			DefaultTools.getInstance();
-		}
-		else {
-			AESTools.getInstance(args);
-		}
-	}
-
 	public static void init(String password) {
 		if (type == 1) {
 			DefaultTools.getInstance();
 		}
 		else {
+			System.err.println(password);
 			AESTools.getInstance(password);
 		}
 	}

@@ -36,11 +36,17 @@ public final class DefaultTools implements DecryptClassTool {
 	}
 
 	@Override
-	public byte[] decode(byte[] ciphertext, byte[] plaintext, int bytesRead) {
+	public byte[] decode(byte[] ciphertext, int bytesRead) {
+		byte[] plaintext = new byte[bytesRead];
 		for (int i = 0; i < bytesRead; i++) {
 			plaintext[i] = (byte) (ciphertext[i] ^ 1);
 		}
 		return plaintext;
+	}
+
+	@Override
+	public byte[] encode(byte[] plaintext, int bytesRead) {
+		return decode(plaintext, bytesRead);
 	}
 
 }
