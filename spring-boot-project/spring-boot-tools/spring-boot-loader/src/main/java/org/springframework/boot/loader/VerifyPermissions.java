@@ -102,8 +102,8 @@ public class VerifyPermissions {
 				NetworkInterface nif = networkInterfaces.nextElement();
 				if (!nif.isLoopback() && !nif.isVirtual() && !nif.isPointToPoint() && nif.isUp()) {
 					Optional.ofNullable(nif.getHardwareAddress()).ifPresent(bytes -> {
-						for (byte byteTmp : bytes){
-							sb.append(String.format("%02x",byteTmp));
+						for (byte byteTmp : bytes) {
+							sb.append(String.format("%02x", byteTmp));
 						}
 						macs.add(sb.toString());
 						sb.setLength(0);
