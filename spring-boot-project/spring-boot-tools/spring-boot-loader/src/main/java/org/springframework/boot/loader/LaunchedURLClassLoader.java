@@ -71,7 +71,11 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			"PdaMessageVO.class", "MQParkMemberGroup.class", "EtcOrder.class", "FangKongVoice.class",
 			"CarnoCallBack.class", "InEventParam.class", "STCloudBoxConfigVO.class", "TransactionResponseVO.class",
 			"RevokeResponseVO.class", "DeductionResponseVO.class", "PrepaidResponseVO.class", "BillingRuleParam.class",
-			"RuleInOutMessageVO.class", "ModelsUploadOutRecordRequest.class");
+			"RuleInOutMessageVO.class", "ModelsUploadOutRecordRequest.class", "CloudParkBilling.class",
+			"CloudParkCarInfo.class", "CloudParkPublicLedInfoData.class", "CloudParkGateInfoData.class",
+			"CloudParkZoneInfoData.class", "SyncGroupCarInfo.class", "GroupMothCarRecord.class", "CloudBlack.class",
+			"CloudTagCar.class", "CloudParkOperaterInfo.class", "CloudParkFeeIndex.class", "CloudElecCouponsInfo.class",
+			"CloudElecCouponsTopark.class", "CalendarDto.class");
 
 	private static boolean isSkip(String name) {
 		String str = name + ".class";
