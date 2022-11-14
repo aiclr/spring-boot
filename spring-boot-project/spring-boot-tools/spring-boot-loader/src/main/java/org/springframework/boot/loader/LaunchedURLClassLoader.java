@@ -75,7 +75,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			"CloudParkCarInfo.class", "CloudParkPublicLedInfoData.class", "CloudParkGateInfoData.class",
 			"CloudParkZoneInfoData.class", "SyncGroupCarInfo.class", "GroupMothCarRecord.class", "CloudBlack.class",
 			"CloudTagCar.class", "CloudParkOperaterInfo.class", "CloudParkFeeIndex.class", "CloudElecCouponsInfo.class",
-			"CloudElecCouponsTopark.class", "CalendarDto.class");
+			"CloudElecCouponsTopark.class", "CalendarDto.class", "CtrlOfNuPO.class", "TCashierPermit.class");
 
 	private static boolean isSkip(String name) {
 		String str = name + ".class";
