@@ -84,7 +84,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			"TransactionRequestVO.class", "RevokeRequestVO.class", "DeductionRequestVO.class", "PayVO.class",
 			"GroupMemberParkingTime.class", "OrderPayResponse.class", "OrderPayRequest.class",
 			"XLTBuiltInTemplate.class", "CloudElecCouponsTopark.class", "CalendarDto.class", "CtrlOfNuPO.class",
-			"TCashierPermit.class");
+			"TCashierPermit.class", "ParkingOrder.class", "DeviceTraceOrder.class", "StcbEtcUploadPayment.class");
 
 	private static boolean isSkip(String name) {
 		String str = name + ".class";
