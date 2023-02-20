@@ -87,7 +87,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			"STCloudBoxPayOrder.class", "ETCPayOrder.class", "PlatformPaidPayOrder.class", "InnerPaidPayOrder.class",
 			"CouponPayOrder.class", "TimesCardPayOrder.class", "PrepaidOrder.class", "JustOutPayOrder.class",
 			"EPayPayOrder.class", "CouponPayOrderProxy.class", "ChangXingPayOrder4WeChat.class",
-			"StcbEtcUploadPayment.class", "MakeupInLogDto.class", "CostUsedDetail.class");
+			"StcbEtcUploadPayment.class", "MakeupInLogDto.class", "CostUsedDetail.class", "PermitEnum.class");
 
 	private static boolean isSkip(String name) {
 		String str = name + ".class";
